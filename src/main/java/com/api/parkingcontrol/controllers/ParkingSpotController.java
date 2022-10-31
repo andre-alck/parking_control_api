@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.api.parkingcontrol.dtos.ParkingSpotDTO;
 import com.api.parkingcontrol.models.ParkingSpotModel;
@@ -56,12 +57,25 @@ public class ParkingSpotController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getOndeParkingSpot(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> getOneParkingSpot(@PathVariable(value = "id") UUID id) {
         Optional<ParkingSpotModel> parkingSpotModelOptional = parkingSpotService.findById(id);
 
         if (!parkingSpotModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parking Spot Not Found.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(parkingSpotModelOptional.get());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteParkingSpot(@PathVariable(value = "id") UUID id) {
+        Optional<ParkingSpotModel> parkingSpotModelOptional = parkingSpotService.findById(id);
+
+        if (!parkingSpotModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID Not Found.");
+        }
+
+        parkingSpotService.delete(parkingSpotModelOptional.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body("ID " + id.toString() + " Deleted.");
     }
 }
