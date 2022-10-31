@@ -12,13 +12,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.api.parkingcontrol.dtos.ParkingSpotDTO;
 import com.api.parkingcontrol.models.ParkingSpotModel;
@@ -77,5 +78,25 @@ public class ParkingSpotController {
         parkingSpotService.delete(parkingSpotModelOptional.get());
 
         return ResponseEntity.status(HttpStatus.OK).body("ID " + id.toString() + " Deleted.");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateParkingSpot(@PathVariable(value = "id") UUID id,
+            @RequestBody @Valid ParkingSpotDTO parkingSpotDTO) {
+        Optional<ParkingSpotModel> parkingSpotModelOptional = parkingSpotService.findById(id);
+
+        if (!parkingSpotModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID Not Found.");
+        }
+
+        ParkingSpotModel parkingSpotModel = parkingSpotModelOptional.get();
+        parkingSpotModel.setCarLicensePlate(parkingSpotDTO.getCarLicensePlate());
+        parkingSpotModel.setCarBrand(parkingSpotDTO.getCarBrand());
+        parkingSpotModel.setCarModel(parkingSpotDTO.getCarModel());
+        parkingSpotModel.setCarColor(parkingSpotDTO.getCarColor());
+        parkingSpotModel.setCarColor(parkingSpotDTO.getCarColor());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Parking Spot Updated." + parkingSpotService.save(parkingSpotModel));
     }
 }
